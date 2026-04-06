@@ -11,6 +11,7 @@ import NewApplication from "@/pages/NewApplication";
 import Applications from "@/pages/Applications";
 import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
+import Templates from "@/pages/Templates";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
