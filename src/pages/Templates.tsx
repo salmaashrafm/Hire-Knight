@@ -249,7 +249,7 @@ export default function Templates() {
               <TemplateCard
                 key={t.id}
                 template={t}
-                onSend={() => setSendTemplate(t)}
+                onSend={() => { setSendTemplate(t); setSendSubject(t.subject); }}
                 onEdit={() => startEdit(t)}
                 onDelete={() => deleteTemplate(t.id)}
                 onDuplicate={() => duplicateTemplate(t)}
