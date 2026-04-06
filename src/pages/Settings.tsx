@@ -239,7 +239,19 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      <Button onClick={save} disabled={saving} className="w-full">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Key className="h-5 w-5" /> OpenAI API Key</CardTitle>
+          <CardDescription>Provide your own OpenAI API key for CV analysis and email generation. If left blank, the system default key will be used.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>API Key</Label>
+            <Input type="password" value={openaiApiKey} onChange={(e) => setOpenaiApiKey(e.target.value)} placeholder="sk-..." />
+            <p className="text-xs text-muted-foreground">You can get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">platform.openai.com</a></p>
+          </div>
+        </CardContent>
+      </Card>
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
         Save Profile & SMTP
       </Button>
