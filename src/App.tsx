@@ -12,6 +12,7 @@ import Applications from "@/pages/Applications";
 import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
