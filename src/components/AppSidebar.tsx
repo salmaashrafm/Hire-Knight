@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Briefcase } from "lucide-react";
+import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Briefcase, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +8,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "New Application", icon: PlusCircle, path: "/new-application" },
   { label: "Applications", icon: List, path: "/applications" },
+  { label: "Templates", icon: FileText, path: "/templates" },
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 

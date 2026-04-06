@@ -11,6 +11,7 @@ import NewApplication from "@/pages/NewApplication";
 import Applications from "@/pages/Applications";
 import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
+import Templates from "@/pages/Templates";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/new-application" element={<NewApplication />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/applications/:id" element={<ApplicationDetail />} />
+              <Route path="/templates" element={<Templates />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
