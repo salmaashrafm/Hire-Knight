@@ -46,6 +46,7 @@ export default function Settings() {
         setSmtpPort(String(data.smtp_port || 587));
         setSmtpUser(data.smtp_user || "");
         setOpenaiApiKey((data as any).openai_api_key || "");
+      }
 
       // Initialize prompts with defaults, override with user's custom ones
       const initial: Record<string, string> = {};
