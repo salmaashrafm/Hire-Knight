@@ -127,7 +127,7 @@ export default function Templates() {
     }
     setSending(true);
     const values = { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName };
-    const finalSubject = replacePlaceholders(sendTemplate.subject, values);
+    const finalSubject = sendSubject || replacePlaceholders(sendTemplate.subject, values);
     const finalBody = replacePlaceholders(sendTemplate.body, values);
 
     try {
