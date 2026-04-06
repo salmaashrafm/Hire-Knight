@@ -232,7 +232,7 @@ export default function Templates() {
               <TemplateCard
                 key={t.id}
                 template={t}
-                onSend={() => setSendTemplate(t)}
+                onSend={() => { setSendTemplate(t); setSendSubject(t.subject); }}
                 onDuplicate={() => duplicateTemplate(t)}
               />
             ))}
