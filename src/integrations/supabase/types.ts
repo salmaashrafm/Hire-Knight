@@ -120,6 +120,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          openai_api_key: string | null
           smtp_host: string | null
           smtp_password_encrypted: string | null
           smtp_port: number | null
@@ -134,6 +135,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id?: string
+          openai_api_key?: string | null
           smtp_host?: string | null
           smtp_password_encrypted?: string | null
           smtp_port?: number | null
@@ -148,6 +150,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          openai_api_key?: string | null
           smtp_host?: string | null
           smtp_password_encrypted?: string | null
           smtp_port?: number | null

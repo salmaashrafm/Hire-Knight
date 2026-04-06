@@ -27,8 +27,9 @@ serve(async (req) => {
       });
     }
 
-    // Load user's custom prompt if authenticated
+    // Load user's custom prompt and API key if authenticated
     let systemPrompt = DEFAULT_PROMPT;
+    let userOpenaiKey: string | null = null;
     if (authHeader) {
       const supabase = createClient(
         Deno.env.get("SUPABASE_URL")!,
@@ -37,17 +38,16 @@ serve(async (req) => {
       );
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: promptRow } = await supabase
-          .from("user_prompts")
-          .select("prompt_text")
-          .eq("user_id", user.id)
-          .eq("prompt_key", "analyze_cv")
-          .single();
-        if (promptRow?.prompt_text) systemPrompt = promptRow.prompt_text;
+        const [promptRes, profileRes] = await Promise.all([
+          supabase.from("user_prompts").select("prompt_text").eq("user_id", user.id).eq("prompt_key", "analyze_cv").single(),
+          supabase.from("profiles").select("openai_api_key").eq("user_id", user.id).single(),
+        ]);
+        if (promptRes.data?.prompt_text) systemPrompt = promptRes.data.prompt_text;
+        if (profileRes.data?.openai_api_key) userOpenaiKey = profileRes.data.openai_api_key;
       }
     }
 
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    const OPENAI_API_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {

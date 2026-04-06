@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Save, Upload, FileText, Trash2, RotateCcw } from "lucide-react";
+import { Loader2, Save, Upload, FileText, Trash2, RotateCcw, Key } from "lucide-react";
 import { DEFAULT_PROMPTS } from "@/lib/default-prompts";
 
 export default function Settings() {
@@ -25,6 +25,7 @@ export default function Settings() {
   const [smtpPort, setSmtpPort] = useState("587");
   const [smtpUser, setSmtpUser] = useState("");
   const [smtpPassword, setSmtpPassword] = useState("");
+  const [openaiApiKey, setOpenaiApiKey] = useState("");
 
   // Prompts
   const [prompts, setPrompts] = useState<Record<string, string>>({});
@@ -44,6 +45,7 @@ export default function Settings() {
         setSmtpHost(data.smtp_host || "");
         setSmtpPort(String(data.smtp_port || 587));
         setSmtpUser(data.smtp_user || "");
+        setOpenaiApiKey((data as any).openai_api_key || "");
       }
 
       // Initialize prompts with defaults, override with user's custom ones
@@ -109,14 +111,16 @@ export default function Settings() {
   const save = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
+    const updateData: any = {
       full_name: fullName,
       cv_text: cvText,
       smtp_host: smtpHost,
       smtp_port: parseInt(smtpPort) || 587,
       smtp_user: smtpUser,
       smtp_password_encrypted: smtpPassword || undefined,
-    }).eq("user_id", user.id);
+    };
+    if (openaiApiKey) updateData.openai_api_key = openaiApiKey;
+    const { error } = await supabase.from("profiles").update(updateData).eq("user_id", user.id);
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
@@ -236,9 +240,23 @@ export default function Settings() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Key className="h-5 w-5" /> OpenAI API Key</CardTitle>
+          <CardDescription>Provide your own OpenAI API key for CV analysis and email generation. If left blank, the system default key will be used.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>API Key</Label>
+            <Input type="password" value={openaiApiKey} onChange={(e) => setOpenaiApiKey(e.target.value)} placeholder="sk-..." />
+            <p className="text-xs text-muted-foreground">You can get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">platform.openai.com</a></p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Button onClick={save} disabled={saving} className="w-full">
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-        Save Profile & SMTP
+        Save Profile & Settings
       </Button>
 
       {/* AI Prompts Section */}

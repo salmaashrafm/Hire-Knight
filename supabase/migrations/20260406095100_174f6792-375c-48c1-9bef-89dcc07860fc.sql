@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN openai_api_key TEXT DEFAULT NULL;
