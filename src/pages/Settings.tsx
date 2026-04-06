@@ -110,14 +110,16 @@ export default function Settings() {
   const save = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
+    const updateData: any = {
       full_name: fullName,
       cv_text: cvText,
       smtp_host: smtpHost,
       smtp_port: parseInt(smtpPort) || 587,
       smtp_user: smtpUser,
       smtp_password_encrypted: smtpPassword || undefined,
-    }).eq("user_id", user.id);
+    };
+    if (openaiApiKey) updateData.openai_api_key = openaiApiKey;
+    const { error } = await supabase.from("profiles").update(updateData).eq("user_id", user.id);
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
