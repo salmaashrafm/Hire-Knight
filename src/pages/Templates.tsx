@@ -288,10 +288,14 @@ export default function Templates() {
               <Label>اسمك</Label>
               <Input value={sendName} onChange={(e) => setSendName(e.target.value)} placeholder="Your Name" />
             </div>
+            <div className="space-y-1">
+              <Label>الموضوع (Subject)</Label>
+              <Input value={sendSubject} onChange={(e) => setSendSubject(e.target.value)} placeholder={sendTemplate ? replacePlaceholders(sendTemplate.subject, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName }) : ""} />
+            </div>
 
             {sendTemplate && (
               <div className="rounded-md bg-muted p-3 text-sm max-h-40 overflow-y-auto whitespace-pre-wrap">
-                <p className="font-medium mb-1">{replacePlaceholders(sendTemplate.subject, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
+                <p className="font-medium mb-1">{sendSubject || replacePlaceholders(sendTemplate.subject, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
                 <p className="text-muted-foreground">{replacePlaceholders(sendTemplate.body, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
               </div>
             )}
