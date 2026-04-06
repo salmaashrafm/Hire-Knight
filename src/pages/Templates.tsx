@@ -48,6 +48,7 @@ export default function Templates() {
   const [sendCompany, setSendCompany] = useState("");
   const [sendJobTitle, setSendJobTitle] = useState("");
   const [sendName, setSendName] = useState("");
+  const [sendSubject, setSendSubject] = useState("");
   const [sending, setSending] = useState(false);
 
   const fetchTemplates = async () => {
