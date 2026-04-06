@@ -163,6 +163,7 @@ export default function Templates() {
       setSendEmail("");
       setSendCompany("");
       setSendJobTitle("");
+      setSendSubject("");
     } catch (err: any) {
       toast({ title: "فشل الإرسال", description: err.message, variant: "destructive" });
     } finally {
