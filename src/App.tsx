@@ -12,6 +12,7 @@ import Applications from "@/pages/Applications";
 import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
 import Templates from "@/pages/Templates";
+import JobSearch from "@/pages/JobSearch";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/applications" element={<Applications />} />
               <Route path="/applications/:id" element={<ApplicationDetail />} />
               <Route path="/templates" element={<Templates />} />
+              <Route path="/job-search" element={<JobSearch />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
