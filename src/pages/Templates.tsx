@@ -127,7 +127,7 @@ export default function Templates() {
     }
     setSending(true);
     const values = { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName };
-    const finalSubject = sendSubject || replacePlaceholders(sendTemplate.subject, values);
+    const finalSubject = replacePlaceholders(sendSubject, values);
     const finalBody = replacePlaceholders(sendTemplate.body, values);
 
     try {
@@ -232,7 +232,7 @@ export default function Templates() {
               <TemplateCard
                 key={t.id}
                 template={t}
-                onSend={() => setSendTemplate(t)}
+                onSend={() => { setSendTemplate(t); setSendSubject(t.subject); }}
                 onDuplicate={() => duplicateTemplate(t)}
               />
             ))}
@@ -249,7 +249,7 @@ export default function Templates() {
               <TemplateCard
                 key={t.id}
                 template={t}
-                onSend={() => setSendTemplate(t)}
+                onSend={() => { setSendTemplate(t); setSendSubject(t.subject); }}
                 onEdit={() => startEdit(t)}
                 onDelete={() => deleteTemplate(t.id)}
                 onDuplicate={() => duplicateTemplate(t)}
@@ -296,7 +296,7 @@ export default function Templates() {
 
             {sendTemplate && (
               <div className="rounded-md bg-muted p-3 text-sm max-h-40 overflow-y-auto whitespace-pre-wrap">
-                <p className="font-medium mb-1">{sendSubject || replacePlaceholders(sendTemplate.subject, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
+                <p className="font-medium mb-1">{replacePlaceholders(sendSubject, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
                 <p className="text-muted-foreground">{replacePlaceholders(sendTemplate.body, { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName })}</p>
               </div>
             )}
