@@ -90,26 +90,38 @@ export default function ApplicationDetail() {
       toast({ title: "بيانات ناقصة", description: "تأكد من الإيميل والموضوع والمحتوى", variant: "destructive" });
       return;
     }
+
     setSending(true);
+
     try {
-      // Save any edits first
-      await supabase.from("applications").update({
+      const { error: saveError } = await supabase.from("applications").update({
         generated_email_subject: editSubject,
         generated_email_body: editBody,
         recipient_email: editRecipient,
       }).eq("id", id);
 
-      const { error } = await supabase.functions.invoke("send-application-email", {
+      if (saveError) throw saveError;
+
+      const sendRequest = supabase.functions.invoke("send-application-email", {
         body: {
           applicationId: id,
           recipientEmail: editRecipient,
           subject: editSubject,
           body: editBody,
         },
+      }).then(({ data, error }) => {
+        if (error) throw error;
+        if (data?.status && data.status !== "sent") {
+          throw new Error(data.error || "Email send failed");
+        }
+        return data;
       });
-      if (error) throw error;
 
-      // Refresh email logs
+      await Promise.race([
+        sendRequest,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("انتهت مهلة الإرسال، جرّب تاني بعد شوية")), 35000)),
+      ]);
+
       const { data: emailData } = await supabase.from("email_logs").select("*").eq("application_id", id).order("sent_at", { ascending: false });
       setEmails(emailData || []);
       setApp((prev) => prev ? { ...prev, status: "sent" as Enums<"application_status">, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient } : null);
@@ -117,8 +129,9 @@ export default function ApplicationDetail() {
       toast({ title: "تم إرسال الإيميل!" });
     } catch (err: any) {
       toast({ title: "الإرسال فشل", description: err.message, variant: "destructive" });
+    } finally {
+      setSending(false);
     }
-    setSending(false);
   };
 
   if (loading) return <p className="text-muted-foreground p-8">Loading...</p>;
