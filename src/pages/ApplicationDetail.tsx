@@ -5,9 +5,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, CheckCircle, AlertTriangle, Mail, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, Mail, Trash2, Send, Loader2, Pencil } from "lucide-react";
 import type { Tables, Enums } from "@/integrations/supabase/types";
 
 type Application = Tables<"applications">;
@@ -20,6 +23,13 @@ export default function ApplicationDetail() {
   const [app, setApp] = useState<Application | null>(null);
   const [emails, setEmails] = useState<EmailLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  // Editable fields
+  const [editSubject, setEditSubject] = useState("");
+  const [editBody, setEditBody] = useState("");
+  const [editRecipient, setEditRecipient] = useState("");
 
   useEffect(() => {
     if (!id || !user) return;
@@ -28,6 +38,11 @@ export default function ApplicationDetail() {
       supabase.from("email_logs").select("*").eq("application_id", id).eq("user_id", user.id).order("sent_at", { ascending: false }),
     ]).then(([{ data: appData }, { data: emailData }]) => {
       setApp(appData);
+      if (appData) {
+        setEditSubject(appData.generated_email_subject || "");
+        setEditBody(appData.generated_email_body || "");
+        setEditRecipient(appData.recipient_email || "");
+      }
       setEmails(emailData || []);
       setLoading(false);
     });
@@ -52,6 +67,58 @@ export default function ApplicationDetail() {
     } else {
       navigate("/applications");
     }
+  };
+
+  const saveEdits = async () => {
+    if (!id) return;
+    const { error } = await supabase.from("applications").update({
+      generated_email_subject: editSubject,
+      generated_email_body: editBody,
+      recipient_email: editRecipient,
+    }).eq("id", id);
+    if (error) {
+      toast({ title: "الحفظ فشل", description: error.message, variant: "destructive" });
+    } else {
+      setApp((prev) => prev ? { ...prev, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient } : null);
+      setEditing(false);
+      toast({ title: "تم الحفظ" });
+    }
+  };
+
+  const resendEmail = async () => {
+    if (!id || !editRecipient || !editSubject || !editBody) {
+      toast({ title: "بيانات ناقصة", description: "تأكد من الإيميل والموضوع والمحتوى", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+    try {
+      // Save any edits first
+      await supabase.from("applications").update({
+        generated_email_subject: editSubject,
+        generated_email_body: editBody,
+        recipient_email: editRecipient,
+      }).eq("id", id);
+
+      const { error } = await supabase.functions.invoke("send-application-email", {
+        body: {
+          applicationId: id,
+          recipientEmail: editRecipient,
+          subject: editSubject,
+          body: editBody,
+        },
+      });
+      if (error) throw error;
+
+      // Refresh email logs
+      const { data: emailData } = await supabase.from("email_logs").select("*").eq("application_id", id).order("sent_at", { ascending: false });
+      setEmails(emailData || []);
+      setApp((prev) => prev ? { ...prev, status: "sent" as Enums<"application_status">, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient } : null);
+      setEditing(false);
+      toast({ title: "تم إرسال الإيميل!" });
+    } catch (err: any) {
+      toast({ title: "الإرسال فشل", description: err.message, variant: "destructive" });
+    }
+    setSending(false);
   };
 
   if (loading) return <p className="text-muted-foreground p-8">Loading...</p>;
@@ -115,20 +182,57 @@ export default function ApplicationDetail() {
         </Card>
       )}
 
-      {app.generated_email_subject && (
-        <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> Generated Email</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-sm text-muted-foreground">To: {app.recipient_email || "—"}</p>
-            <p className="font-medium">{app.generated_email_subject}</p>
-            <p className="text-sm whitespace-pre-wrap">{app.generated_email_body}</p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Email Section — View / Edit / Resend */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> الإيميل</CardTitle>
+            <div className="flex gap-2">
+              {!editing && (
+                <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+                  <Pencil className="mr-2 h-3 w-3" /> تعديل
+                </Button>
+              )}
+              <Button size="sm" onClick={resendEmail} disabled={sending || !editRecipient}>
+                {sending ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : <Send className="mr-2 h-3 w-3" />}
+                إرسال {app.status === "sent" ? "تاني" : ""}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {editing ? (
+            <>
+              <div className="space-y-2">
+                <Label>إيميل المستلم</Label>
+                <Input type="email" value={editRecipient} onChange={(e) => setEditRecipient(e.target.value)} placeholder="hr@company.com" />
+              </div>
+              <div className="space-y-2">
+                <Label>الموضوع</Label>
+                <Input value={editSubject} onChange={(e) => setEditSubject(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>المحتوى</Label>
+                <Textarea rows={10} value={editBody} onChange={(e) => setEditBody(e.target.value)} />
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => { setEditing(false); setEditSubject(app.generated_email_subject || ""); setEditBody(app.generated_email_body || ""); setEditRecipient(app.recipient_email || ""); }}>إلغاء</Button>
+                <Button onClick={saveEdits}>حفظ التعديلات</Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">إلى: {app.recipient_email || "—"}</p>
+              <p className="font-medium">{app.generated_email_subject || "لا يوجد موضوع"}</p>
+              <p className="text-sm whitespace-pre-wrap">{app.generated_email_body || "لا يوجد محتوى"}</p>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       {emails.length > 0 && (
         <Card>
-          <CardHeader><CardTitle>Email History</CardTitle></CardHeader>
+          <CardHeader><CardTitle>سجل الإيميلات</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {emails.map((e) => (
               <div key={e.id} className="flex items-center justify-between border-b pb-2 last:border-0">
