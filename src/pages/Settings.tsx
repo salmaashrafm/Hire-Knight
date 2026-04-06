@@ -25,6 +25,7 @@ export default function Settings() {
   const [smtpPort, setSmtpPort] = useState("587");
   const [smtpUser, setSmtpUser] = useState("");
   const [smtpPassword, setSmtpPassword] = useState("");
+  const [openaiApiKey, setOpenaiApiKey] = useState("");
 
   // Prompts
   const [prompts, setPrompts] = useState<Record<string, string>>({});
