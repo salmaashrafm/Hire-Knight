@@ -8,6 +8,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "New Application", icon: PlusCircle, path: "/new-application" },
   { label: "Applications", icon: List, path: "/applications" },
+  { label: "Templates", icon: FileText, path: "/templates" },
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 

@@ -46,6 +46,7 @@ const App = () => (
               <Route path="/new-application" element={<NewApplication />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/applications/:id" element={<ApplicationDetail />} />
+              <Route path="/templates" element={<Templates />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
