@@ -11,6 +11,7 @@ const navItems = [
   { label: "New Application", icon: PlusCircle, path: "/new-application" },
   { label: "Applications", icon: List, path: "/applications" },
   { label: "Templates", icon: FileText, path: "/templates" },
+  { label: "Job Search", icon: Search, path: "/job-search" },
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 
