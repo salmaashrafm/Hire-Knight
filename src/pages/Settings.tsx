@@ -253,8 +253,10 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
+
+      <Button onClick={save} disabled={saving} className="w-full">
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-        Save Profile & SMTP
+        Save Profile & Settings
       </Button>
 
       {/* AI Prompts Section */}
