@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Save, Upload, FileText, Trash2, RotateCcw } from "lucide-react";
+import { Loader2, Save, Upload, FileText, Trash2, RotateCcw, Key } from "lucide-react";
 import { DEFAULT_PROMPTS } from "@/lib/default-prompts";
 
 export default function Settings() {
