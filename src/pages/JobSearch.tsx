@@ -112,7 +112,7 @@ export default function JobSearch() {
                 <Briefcase className="h-5 w-5 text-primary" />
                 {suggestions.suggestedTitle}
               </CardTitle>
-              <CardDescription>المسمى الوظيفي المقترح بناءً على خبراتك</CardDescription>
+              <CardDescription>Suggested job title based on your experience</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
