@@ -128,9 +128,9 @@ export default function JobSearch() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-primary" />
-                لينكات البحث الجاهزة
+                Ready Search Links
               </CardTitle>
-              <CardDescription>اضغط على أي لينك وهيفتحلك صفحة البحث مباشرة</CardDescription>
+              <CardDescription>Click any link to open the search page directly</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {suggestions.searchQueries.map((sq, i) => {
