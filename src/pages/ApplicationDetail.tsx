@@ -229,6 +229,10 @@ export default function ApplicationDetail() {
                 <Input type="email" value={editRecipient} onChange={(e) => setEditRecipient(e.target.value)} placeholder="hr@company.com" />
               </div>
               <div className="space-y-2">
+                <Label>رقم واتساب</Label>
+                <Input type="tel" value={editWhatsapp} onChange={(e) => setEditWhatsapp(e.target.value)} placeholder="+201234567890" dir="ltr" />
+              </div>
+              <div className="space-y-2">
                 <Label>الموضوع</Label>
                 <Input value={editSubject} onChange={(e) => setEditSubject(e.target.value)} />
               </div>
@@ -237,7 +241,7 @@ export default function ApplicationDetail() {
                 <Textarea rows={10} value={editBody} onChange={(e) => setEditBody(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => { setEditing(false); setEditSubject(app.generated_email_subject || ""); setEditBody(app.generated_email_body || ""); setEditRecipient(app.recipient_email || ""); }}>إلغاء</Button>
+                <Button variant="outline" onClick={() => { setEditing(false); setEditSubject(app.generated_email_subject || ""); setEditBody(app.generated_email_body || ""); setEditRecipient(app.recipient_email || ""); setEditWhatsapp((app as any).whatsapp_number || ""); }}>إلغاء</Button>
                 <Button onClick={saveEdits}>حفظ التعديلات</Button>
               </div>
             </>
