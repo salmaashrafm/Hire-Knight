@@ -248,6 +248,7 @@ export default function ApplicationDetail() {
           ) : (
             <>
               <p className="text-sm text-muted-foreground">إلى: {app.recipient_email || "—"}</p>
+              {(app as any).whatsapp_number && <p className="text-sm text-muted-foreground">واتساب: {(app as any).whatsapp_number}</p>}
               <p className="font-medium">{app.generated_email_subject || "لا يوجد موضوع"}</p>
               <p className="text-sm whitespace-pre-wrap">{app.generated_email_body || "لا يوجد محتوى"}</p>
             </>
