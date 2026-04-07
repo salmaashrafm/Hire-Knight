@@ -77,11 +77,12 @@ export default function ApplicationDetail() {
       generated_email_subject: editSubject,
       generated_email_body: editBody,
       recipient_email: editRecipient,
-    }).eq("id", id);
+      whatsapp_number: editWhatsapp,
+    } as any).eq("id", id);
     if (error) {
       toast({ title: "الحفظ فشل", description: error.message, variant: "destructive" });
     } else {
-      setApp((prev) => prev ? { ...prev, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient } : null);
+      setApp((prev) => prev ? { ...prev, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient, whatsapp_number: editWhatsapp } as any : null);
       setEditing(false);
       toast({ title: "تم الحفظ" });
     }
