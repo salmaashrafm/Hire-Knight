@@ -43,6 +43,7 @@ export default function ApplicationDetail() {
         setEditSubject(appData.generated_email_subject || "");
         setEditBody(appData.generated_email_body || "");
         setEditRecipient(appData.recipient_email || "");
+        setEditWhatsapp((appData as any).whatsapp_number || "");
       }
       setEmails(emailData || []);
       setLoading(false);
