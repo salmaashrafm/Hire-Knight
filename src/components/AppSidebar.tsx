@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Briefcase, FileText, Search, ScanSearch } from "lucide-react";
+import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Briefcase, FileText, Search, ScanSearch, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -16,7 +18,18 @@ const navItems = [
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").single()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  const allItems = isAdmin
+    ? [...navItems, { label: "Admin", icon: ShieldCheck, path: "/admin" }]
+    : navItems;
 
   return (
     <aside className="hidden md:flex md:w-64 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
@@ -27,7 +40,7 @@ export default function AppSidebar() {
         </Link>
       </div>
       <nav className="flex-1 px-3 space-y-1">
-        {navItems.map((item) => (
+        {allItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
