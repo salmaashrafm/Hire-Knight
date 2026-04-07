@@ -47,7 +47,7 @@ export default function MobileNav() {
           <div className="p-6 border-b">
             <div className="flex items-center gap-2">
               <Briefcase className="h-5 w-5 text-primary" />
-              <span className="font-bold">AI Job Hunter</span>
+              <span className="font-bold">Hire Knight</span>
             </div>
           </div>
           <nav className="p-3 space-y-1">

@@ -105,7 +105,7 @@ export default function Auth() {
               <CardHeader>
                 <CardTitle>{isLogin ? "Welcome back" : "Create an account"}</CardTitle>
                 <CardDescription>
-                  {isLogin ? "Sign in to your account" : "Get started with AI Job Hunter"}
+                  {isLogin ? "Sign in to your account" : "Get started with Hire Knight"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
