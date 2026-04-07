@@ -14,6 +14,7 @@ import Settings from "@/pages/Settings";
 import Templates from "@/pages/Templates";
 import JobSearch from "@/pages/JobSearch";
 import ATSAnalysis from "@/pages/ATSAnalysis";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
