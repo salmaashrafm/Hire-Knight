@@ -13,6 +13,7 @@ import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
 import Templates from "@/pages/Templates";
 import JobSearch from "@/pages/JobSearch";
+import ATSAnalysis from "@/pages/ATSAnalysis";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
