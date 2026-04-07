@@ -15,6 +15,31 @@ const DEFAULT_PROMPT = `You are a CV/job matching expert. Analyze the CV against
 - gaps: array of strings (missing or weak areas)
 Be concise. Each strength/gap should be 3-8 words. If you can't find a name/company/title, use an empty string.`;
 
+async function callAI(apiKey: string, apiUrl: string, model: string, systemPrompt: string, userContent: string) {
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.3,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("AI error:", err);
+    throw new Error(`AI call failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -27,7 +52,6 @@ serve(async (req) => {
       });
     }
 
-    // Load user's custom prompt and API key if authenticated
     let systemPrompt = DEFAULT_PROMPT;
     let userOpenaiKey: string | null = null;
     if (authHeader) {
@@ -47,33 +71,20 @@ serve(async (req) => {
       }
     }
 
-    const OPENAI_API_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
+    const userContent = `CV:\n${cvText}\n\nJob Description:\n${jobDescription}`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `CV:\n${cvText}\n\nJob Description:\n${jobDescription}` },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.3,
-      }),
-    });
+    // Try OpenAI first (user key or env), fallback to Lovable AI
+    const OPENAI_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
+    const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("OpenAI error:", err);
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let result;
+    if (OPENAI_KEY) {
+      result = await callAI(OPENAI_KEY, "https://api.openai.com/v1/chat/completions", "gpt-4o-mini", systemPrompt, userContent);
+    } else if (LOVABLE_KEY) {
+      result = await callAI(LOVABLE_KEY, "https://ai.gateway.lovable.dev/v1/chat/completions", "google/gemini-3-flash-preview", systemPrompt, userContent);
+    } else {
+      throw new Error("No AI provider configured");
     }
-
-    const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
