@@ -30,6 +30,7 @@ export default function ApplicationDetail() {
   const [editSubject, setEditSubject] = useState("");
   const [editBody, setEditBody] = useState("");
   const [editRecipient, setEditRecipient] = useState("");
+  const [editWhatsapp, setEditWhatsapp] = useState("");
 
   useEffect(() => {
     if (!id || !user) return;
