@@ -207,11 +207,20 @@ export default function ApplicationDetail() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> الإيميل</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> الإيميل / واتساب</CardTitle>
             <div className="flex gap-2">
               {!editing && (
                 <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
                   <Pencil className="mr-2 h-3 w-3" /> تعديل
+                </Button>
+              )}
+              {editWhatsapp && (
+                <Button size="sm" variant="outline" className="text-green-600 border-green-600 hover:bg-green-50" onClick={() => {
+                  const phone = editWhatsapp.replace(/[^0-9]/g, "");
+                  const message = `${editSubject}\n\n${editBody}`;
+                  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+                }}>
+                  <MessageCircle className="mr-2 h-3 w-3" /> واتساب
                 </Button>
               )}
               <Button size="sm" onClick={resendEmail} disabled={sending || !editRecipient}>
