@@ -71,7 +71,7 @@ export default function JobSearch() {
       setSuggestions(data);
       toast({ title: "CV analyzed successfully!" });
     } catch (err: any) {
-      toast({ title: "فشل التحليل", description: err.message, variant: "destructive" });
+      toast({ title: "Analysis failed", description: err.message, variant: "destructive" });
     }
     setLoading(false);
   };
