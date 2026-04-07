@@ -112,7 +112,11 @@ export default function ApplicationDetail() {
       }).then(({ data, error }) => {
         if (error) throw error;
         if (data?.status && data.status !== "sent") {
-          throw new Error(data.error || "Email send failed");
+          const errMsg = data.error || "Email send failed";
+          if (errMsg.includes("SMTP") || errMsg.includes("timeout") || errMsg.includes("timed out") || errMsg.includes("ECONNREFUSED")) {
+            throw new Error("فشل الإرسال — تأكد من إعدادات SMTP في صفحة الإعدادات (السيرفر، البورت، الإيميل، والباسوورد)");
+          }
+          throw new Error(errMsg);
         }
         return data;
       });
