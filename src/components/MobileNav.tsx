@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Menu, Briefcase, FileText, Search } from "lucide-react";
+import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Menu, Briefcase, FileText, Search, ScanSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
