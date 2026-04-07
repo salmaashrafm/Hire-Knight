@@ -121,18 +121,33 @@ export default function Templates() {
     fetchTemplates();
   };
 
-  const handleSend = async () => {
-    if (!sendTemplate || !sendEmail || !user) {
+  const handleSend = async (method: "email" | "whatsapp") => {
+    if (!sendTemplate || !user) {
       toast({ title: "بيانات ناقصة", variant: "destructive" });
       return;
     }
-    setSending(true);
     const values = { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName };
     const finalSubject = replacePlaceholders(sendSubject, values);
     const finalBody = replacePlaceholders(sendTemplate.body, values);
 
+    if (method === "whatsapp") {
+      if (!sendWhatsapp) {
+        toast({ title: "أدخل رقم الواتساب", variant: "destructive" });
+        return;
+      }
+      const phone = sendWhatsapp.replace(/[^0-9]/g, "");
+      const message = `${finalSubject}\n\n${finalBody}`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+      return;
+    }
+
+    if (!sendEmail) {
+      toast({ title: "أدخل الإيميل", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+
     try {
-      // Create a quick application record
       const { data: appData, error: appErr } = await supabase.from("applications").insert({
         user_id: user.id,
         company_name: sendCompany || "—",
@@ -142,8 +157,9 @@ export default function Templates() {
         generated_email_subject: finalSubject,
         generated_email_body: finalBody,
         recipient_email: sendEmail,
+        whatsapp_number: sendWhatsapp,
         status: "draft" as const,
-      }).select("id").single();
+      } as any).select("id").single();
 
       if (appErr) throw appErr;
 
@@ -162,6 +178,7 @@ export default function Templates() {
       toast({ title: "تم الإرسال بنجاح! ✓" });
       setSendTemplate(null);
       setSendEmail("");
+      setSendWhatsapp("");
       setSendCompany("");
       setSendJobTitle("");
       setSendSubject("");
