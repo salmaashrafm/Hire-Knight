@@ -11,6 +11,31 @@ const DEFAULT_PROMPT = `You are a professional job application email writer. Wri
 - body: full email body (plain text, professional tone)
 Sign the email with the candidate's name. Highlight strengths and address gaps constructively. Keep it concise (200-300 words).`;
 
+async function callAI(apiKey: string, apiUrl: string, model: string, systemPrompt: string, userContent: string, temperature = 0.7) {
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      response_format: { type: "json_object" },
+      temperature,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("AI error:", err);
+    throw new Error(`AI call failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -23,7 +48,6 @@ serve(async (req) => {
       });
     }
 
-    // Load user's custom prompt and API key if authenticated
     let systemPrompt = DEFAULT_PROMPT;
     let userOpenaiKey: string | null = null;
     if (authHeader) {
@@ -43,41 +67,23 @@ serve(async (req) => {
       }
     }
 
-    // Inject candidate name into system prompt
     const finalSystemPrompt = candidateName
       ? `${systemPrompt}\n\nThe candidate's name is "${candidateName}".`
       : systemPrompt;
 
-    const OPENAI_API_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
+    const userContent = `Candidate: ${candidateName}\nCompany: ${companyName}\nJob Title: ${jobTitle}\nMatch Score: ${matchScore}%\nStrengths: ${JSON.stringify(strengths)}\nGaps: ${JSON.stringify(gaps)}\n\nCandidate CV:\n${cvText || "Not provided"}`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: finalSystemPrompt },
-          {
-            role: "user",
-            content: `Candidate: ${candidateName}\nCompany: ${companyName}\nJob Title: ${jobTitle}\nMatch Score: ${matchScore}%\nStrengths: ${JSON.stringify(strengths)}\nGaps: ${JSON.stringify(gaps)}\n\nCandidate CV:\n${cvText || "Not provided"}`,
-          },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      }),
-    });
+    const OPENAI_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
+    const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("OpenAI error:", err);
-      return new Response(JSON.stringify({ error: "Email generation failed" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let result;
+    if (OPENAI_KEY) {
+      result = await callAI(OPENAI_KEY, "https://api.openai.com/v1/chat/completions", "gpt-4o-mini", finalSystemPrompt, userContent);
+    } else if (LOVABLE_KEY) {
+      result = await callAI(LOVABLE_KEY, "https://ai.gateway.lovable.dev/v1/chat/completions", "google/gemini-3-flash-preview", finalSystemPrompt, userContent);
+    } else {
+      throw new Error("No AI provider configured");
     }
-
-    const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

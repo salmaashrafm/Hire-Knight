@@ -31,6 +31,31 @@ Check for:
 
 Be thorough but practical. Each issue should have a clear, actionable fix.`;
 
+async function callAI(apiKey: string, apiUrl: string, model: string, systemPrompt: string, userContent: string) {
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.3,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("AI error:", err);
+    throw new Error(`AI call failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -58,33 +83,19 @@ serve(async (req) => {
       }
     }
 
-    const OPENAI_API_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
+    const userContent = `CV/Resume:\n${cvText}`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: ATS_PROMPT },
-          { role: "user", content: `CV/Resume:\n${cvText}` },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.3,
-      }),
-    });
+    const OPENAI_KEY = userOpenaiKey || Deno.env.get("OPENAI_API_KEY");
+    const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("OpenAI error:", err);
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let result;
+    if (OPENAI_KEY) {
+      result = await callAI(OPENAI_KEY, "https://api.openai.com/v1/chat/completions", "gpt-4o-mini", ATS_PROMPT, userContent);
+    } else if (LOVABLE_KEY) {
+      result = await callAI(LOVABLE_KEY, "https://ai.gateway.lovable.dev/v1/chat/completions", "google/gemini-3-flash-preview", ATS_PROMPT, userContent);
+    } else {
+      throw new Error("No AI provider configured");
     }
-
-    const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
