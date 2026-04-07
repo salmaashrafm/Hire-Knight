@@ -101,7 +101,8 @@ export default function ApplicationDetail() {
         generated_email_subject: editSubject,
         generated_email_body: editBody,
         recipient_email: editRecipient,
-      }).eq("id", id);
+        whatsapp_number: editWhatsapp,
+      } as any).eq("id", id);
 
       if (saveError) throw saveError;
 
