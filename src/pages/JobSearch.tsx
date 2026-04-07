@@ -69,7 +69,7 @@ export default function JobSearch() {
       if (error) throw error;
       if (data.error) throw new Error(data.error);
       setSuggestions(data);
-      toast({ title: "تم تحليل الـ CV بنجاح!" });
+      toast({ title: "CV analyzed successfully!" });
     } catch (err: any) {
       toast({ title: "فشل التحليل", description: err.message, variant: "destructive" });
     }
