@@ -80,7 +80,7 @@ export default function JobSearch() {
     <div className="max-w-3xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Job Search</h1>
-        <p className="text-muted-foreground mt-1">AI يحلل الـ CV بتاعك ويولد لينكات بحث جاهزة على مواقع التوظيف</p>
+        <p className="text-muted-foreground mt-1">AI analyzes your CV and generates ready-made search links on job platforms</p>
       </div>
 
       {!suggestions && (
@@ -88,16 +88,16 @@ export default function JobSearch() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              ابدأ البحث الذكي
+              Start Smart Search
             </CardTitle>
             <CardDescription>
-              هنحلل الـ CV بتاعك ونطلعلك لينكات بحث جاهزة على أشهر مواقع التوظيف
+              We'll analyze your CV and generate ready-made search links on top job platforms
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={generateSuggestions} disabled={loading} size="lg">
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Search className="mr-2 h-5 w-5" />}
-              {loading ? "جاري التحليل..." : "حلل الـ CV وابحثلي"}
+              {loading ? "Analyzing..." : "Analyze CV & Search"}
             </Button>
           </CardContent>
         </Card>
