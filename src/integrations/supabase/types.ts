@@ -31,6 +31,7 @@ export type Database = {
           strengths: Json | null
           updated_at: string
           user_id: string
+          whatsapp_number: string | null
         }
         Insert: {
           company_name: string
@@ -48,6 +49,7 @@ export type Database = {
           strengths?: Json | null
           updated_at?: string
           user_id: string
+          whatsapp_number?: string | null
         }
         Update: {
           company_name?: string
@@ -65,6 +67,7 @@ export type Database = {
           strengths?: Json | null
           updated_at?: string
           user_id?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }

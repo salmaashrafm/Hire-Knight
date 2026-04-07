@@ -1,0 +1,1 @@
+ALTER TABLE public.applications ADD COLUMN whatsapp_number text DEFAULT '' NULL;

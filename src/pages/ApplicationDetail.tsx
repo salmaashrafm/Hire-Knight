@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, CheckCircle, AlertTriangle, Mail, Trash2, Send, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, Mail, Trash2, Send, Loader2, Pencil, MessageCircle, Phone } from "lucide-react";
 import type { Tables, Enums } from "@/integrations/supabase/types";
 
 type Application = Tables<"applications">;
@@ -30,6 +30,7 @@ export default function ApplicationDetail() {
   const [editSubject, setEditSubject] = useState("");
   const [editBody, setEditBody] = useState("");
   const [editRecipient, setEditRecipient] = useState("");
+  const [editWhatsapp, setEditWhatsapp] = useState("");
 
   useEffect(() => {
     if (!id || !user) return;
@@ -42,6 +43,7 @@ export default function ApplicationDetail() {
         setEditSubject(appData.generated_email_subject || "");
         setEditBody(appData.generated_email_body || "");
         setEditRecipient(appData.recipient_email || "");
+        setEditWhatsapp((appData as any).whatsapp_number || "");
       }
       setEmails(emailData || []);
       setLoading(false);
@@ -75,11 +77,12 @@ export default function ApplicationDetail() {
       generated_email_subject: editSubject,
       generated_email_body: editBody,
       recipient_email: editRecipient,
-    }).eq("id", id);
+      whatsapp_number: editWhatsapp,
+    } as any).eq("id", id);
     if (error) {
       toast({ title: "الحفظ فشل", description: error.message, variant: "destructive" });
     } else {
-      setApp((prev) => prev ? { ...prev, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient } : null);
+      setApp((prev) => prev ? { ...prev, generated_email_subject: editSubject, generated_email_body: editBody, recipient_email: editRecipient, whatsapp_number: editWhatsapp } as any : null);
       setEditing(false);
       toast({ title: "تم الحفظ" });
     }
@@ -98,7 +101,8 @@ export default function ApplicationDetail() {
         generated_email_subject: editSubject,
         generated_email_body: editBody,
         recipient_email: editRecipient,
-      }).eq("id", id);
+        whatsapp_number: editWhatsapp,
+      } as any).eq("id", id);
 
       if (saveError) throw saveError;
 
@@ -203,11 +207,20 @@ export default function ApplicationDetail() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> الإيميل</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4" /> الإيميل / واتساب</CardTitle>
             <div className="flex gap-2">
               {!editing && (
                 <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
                   <Pencil className="mr-2 h-3 w-3" /> تعديل
+                </Button>
+              )}
+              {editWhatsapp && (
+                <Button size="sm" variant="outline" className="text-green-600 border-green-600 hover:bg-green-50" onClick={() => {
+                  const phone = editWhatsapp.replace(/[^0-9]/g, "");
+                  const message = `${editSubject}\n\n${editBody}`;
+                  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+                }}>
+                  <MessageCircle className="mr-2 h-3 w-3" /> واتساب
                 </Button>
               )}
               <Button size="sm" onClick={resendEmail} disabled={sending || !editRecipient}>
@@ -225,6 +238,10 @@ export default function ApplicationDetail() {
                 <Input type="email" value={editRecipient} onChange={(e) => setEditRecipient(e.target.value)} placeholder="hr@company.com" />
               </div>
               <div className="space-y-2">
+                <Label>رقم واتساب</Label>
+                <Input type="tel" value={editWhatsapp} onChange={(e) => setEditWhatsapp(e.target.value)} placeholder="+201234567890" dir="ltr" />
+              </div>
+              <div className="space-y-2">
                 <Label>الموضوع</Label>
                 <Input value={editSubject} onChange={(e) => setEditSubject(e.target.value)} />
               </div>
@@ -233,13 +250,14 @@ export default function ApplicationDetail() {
                 <Textarea rows={10} value={editBody} onChange={(e) => setEditBody(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => { setEditing(false); setEditSubject(app.generated_email_subject || ""); setEditBody(app.generated_email_body || ""); setEditRecipient(app.recipient_email || ""); }}>إلغاء</Button>
+                <Button variant="outline" onClick={() => { setEditing(false); setEditSubject(app.generated_email_subject || ""); setEditBody(app.generated_email_body || ""); setEditRecipient(app.recipient_email || ""); setEditWhatsapp((app as any).whatsapp_number || ""); }}>إلغاء</Button>
                 <Button onClick={saveEdits}>حفظ التعديلات</Button>
               </div>
             </>
           ) : (
             <>
               <p className="text-sm text-muted-foreground">إلى: {app.recipient_email || "—"}</p>
+              {(app as any).whatsapp_number && <p className="text-sm text-muted-foreground">واتساب: {(app as any).whatsapp_number}</p>}
               <p className="font-medium">{app.generated_email_subject || "لا يوجد موضوع"}</p>
               <p className="text-sm whitespace-pre-wrap">{app.generated_email_body || "لا يوجد محتوى"}</p>
             </>
