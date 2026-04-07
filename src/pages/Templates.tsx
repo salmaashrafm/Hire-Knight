@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Send, Pencil, Trash2, Loader2, FileText, Copy } from "lucide-react";
+import { Plus, Send, Pencil, Trash2, Loader2, FileText, Copy, MessageCircle } from "lucide-react";
 
 interface EmailTemplate {
   id: string;
