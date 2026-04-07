@@ -36,7 +36,7 @@ export default function AppSidebar() {
       <div className="p-6">
         <Link to="/" className="flex items-center gap-2">
           <Briefcase className="h-6 w-6 text-sidebar-primary" />
-          <span className="text-lg font-bold tracking-tight">AI Job Hunter</span>
+          <span className="text-lg font-bold tracking-tight">Hire Knight</span>
         </Link>
       </div>
       <nav className="flex-1 px-3 space-y-1">
