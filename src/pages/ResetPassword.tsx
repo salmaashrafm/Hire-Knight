@@ -59,7 +59,7 @@ export default function ResetPassword() {
         <div className="w-full max-w-md space-y-8 text-center">
           <div className="inline-flex items-center gap-2 text-primary">
             <Briefcase className="h-8 w-8" />
-            <h1 className="text-3xl font-bold tracking-tight">AI Job Hunter</h1>
+             <h1 className="text-3xl font-bold tracking-tight">Hire Knight</h1>
           </div>
           <Card>
             <CardContent className="pt-6">
