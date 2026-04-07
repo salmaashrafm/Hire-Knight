@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Send, Pencil, Trash2, Loader2, FileText, Copy } from "lucide-react";
+import { Plus, Send, Pencil, Trash2, Loader2, FileText, Copy, MessageCircle } from "lucide-react";
 
 interface EmailTemplate {
   id: string;
@@ -45,6 +45,7 @@ export default function Templates() {
   // Send dialog
   const [sendTemplate, setSendTemplate] = useState<EmailTemplate | null>(null);
   const [sendEmail, setSendEmail] = useState("");
+  const [sendWhatsapp, setSendWhatsapp] = useState("");
   const [sendCompany, setSendCompany] = useState("");
   const [sendJobTitle, setSendJobTitle] = useState("");
   const [sendName, setSendName] = useState("");
@@ -120,18 +121,33 @@ export default function Templates() {
     fetchTemplates();
   };
 
-  const handleSend = async () => {
-    if (!sendTemplate || !sendEmail || !user) {
+  const handleSend = async (method: "email" | "whatsapp") => {
+    if (!sendTemplate || !user) {
       toast({ title: "بيانات ناقصة", variant: "destructive" });
       return;
     }
-    setSending(true);
     const values = { companyName: sendCompany, jobTitle: sendJobTitle, candidateName: sendName };
     const finalSubject = replacePlaceholders(sendSubject, values);
     const finalBody = replacePlaceholders(sendTemplate.body, values);
 
+    if (method === "whatsapp") {
+      if (!sendWhatsapp) {
+        toast({ title: "أدخل رقم الواتساب", variant: "destructive" });
+        return;
+      }
+      const phone = sendWhatsapp.replace(/[^0-9]/g, "");
+      const message = `${finalSubject}\n\n${finalBody}`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+      return;
+    }
+
+    if (!sendEmail) {
+      toast({ title: "أدخل الإيميل", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+
     try {
-      // Create a quick application record
       const { data: appData, error: appErr } = await supabase.from("applications").insert({
         user_id: user.id,
         company_name: sendCompany || "—",
@@ -141,8 +157,9 @@ export default function Templates() {
         generated_email_subject: finalSubject,
         generated_email_body: finalBody,
         recipient_email: sendEmail,
+        whatsapp_number: sendWhatsapp,
         status: "draft" as const,
-      }).select("id").single();
+      } as any).select("id").single();
 
       if (appErr) throw appErr;
 
@@ -161,6 +178,7 @@ export default function Templates() {
       toast({ title: "تم الإرسال بنجاح! ✓" });
       setSendTemplate(null);
       setSendEmail("");
+      setSendWhatsapp("");
       setSendCompany("");
       setSendJobTitle("");
       setSendSubject("");
@@ -274,8 +292,12 @@ export default function Templates() {
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label>إيميل المستلم *</Label>
+              <Label>إيميل المستلم</Label>
               <Input type="email" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)} placeholder="hr@company.com" />
+            </div>
+            <div className="space-y-1">
+              <Label>رقم واتساب</Label>
+              <Input type="tel" value={sendWhatsapp} onChange={(e) => setSendWhatsapp(e.target.value)} placeholder="+201234567890" dir="ltr" />
             </div>
             <div className="space-y-1">
               <Label>اسم الشركة</Label>
@@ -301,10 +323,16 @@ export default function Templates() {
               </div>
             )}
 
-            <Button className="w-full" onClick={handleSend} disabled={sending || !sendEmail}>
-              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-              إرسال الآن
-            </Button>
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={() => handleSend("email")} disabled={sending || !sendEmail}>
+                {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                إرسال إيميل
+              </Button>
+              <Button className="flex-1" variant="outline" onClick={() => handleSend("whatsapp")} disabled={!sendWhatsapp} style={{ borderColor: "#25D366", color: "#25D366" }}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                واتساب
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
