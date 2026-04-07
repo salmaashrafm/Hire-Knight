@@ -182,7 +182,7 @@ export default function JobSearch() {
           </Card>
 
           <Button variant="outline" onClick={() => setSuggestions(null)}>
-            إعادة التحليل
+            Re-analyze
           </Button>
         </div>
       )}
