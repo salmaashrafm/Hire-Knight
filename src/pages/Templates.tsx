@@ -292,8 +292,12 @@ export default function Templates() {
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label>إيميل المستلم *</Label>
+              <Label>إيميل المستلم</Label>
               <Input type="email" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)} placeholder="hr@company.com" />
+            </div>
+            <div className="space-y-1">
+              <Label>رقم واتساب</Label>
+              <Input type="tel" value={sendWhatsapp} onChange={(e) => setSendWhatsapp(e.target.value)} placeholder="+201234567890" dir="ltr" />
             </div>
             <div className="space-y-1">
               <Label>اسم الشركة</Label>
@@ -319,10 +323,16 @@ export default function Templates() {
               </div>
             )}
 
-            <Button className="w-full" onClick={handleSend} disabled={sending || !sendEmail}>
-              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-              إرسال الآن
-            </Button>
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={() => handleSend("email")} disabled={sending || !sendEmail}>
+                {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                إرسال إيميل
+              </Button>
+              <Button className="flex-1" variant="outline" onClick={() => handleSend("whatsapp")} disabled={!sendWhatsapp} style={{ borderColor: "#25D366", color: "#25D366" }}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                واتساب
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
