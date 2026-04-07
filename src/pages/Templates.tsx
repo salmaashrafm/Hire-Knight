@@ -45,6 +45,7 @@ export default function Templates() {
   // Send dialog
   const [sendTemplate, setSendTemplate] = useState<EmailTemplate | null>(null);
   const [sendEmail, setSendEmail] = useState("");
+  const [sendWhatsapp, setSendWhatsapp] = useState("");
   const [sendCompany, setSendCompany] = useState("");
   const [sendJobTitle, setSendJobTitle] = useState("");
   const [sendName, setSendName] = useState("");
