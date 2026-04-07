@@ -13,6 +13,7 @@ import ApplicationDetail from "@/pages/ApplicationDetail";
 import Settings from "@/pages/Settings";
 import Templates from "@/pages/Templates";
 import JobSearch from "@/pages/JobSearch";
+import ATSAnalysis from "@/pages/ATSAnalysis";
 import NotFound from "@/pages/NotFound";
 import ResetPassword from "@/pages/ResetPassword";
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/applications/:id" element={<ApplicationDetail />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/job-search" element={<JobSearch />} />
+              <Route path="/ats-analysis" element={<ATSAnalysis />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
