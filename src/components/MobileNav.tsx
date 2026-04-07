@@ -12,6 +12,7 @@ const navItems = [
   { label: "Applications", icon: List, path: "/applications" },
   { label: "Templates", icon: FileText, path: "/templates" },
   { label: "Job Search", icon: Search, path: "/job-search" },
+  { label: "ATS Analysis", icon: ScanSearch, path: "/ats-analysis" },
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 
