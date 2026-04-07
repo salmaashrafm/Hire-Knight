@@ -69,9 +69,9 @@ export default function JobSearch() {
       if (error) throw error;
       if (data.error) throw new Error(data.error);
       setSuggestions(data);
-      toast({ title: "تم تحليل الـ CV بنجاح!" });
+      toast({ title: "CV analyzed successfully!" });
     } catch (err: any) {
-      toast({ title: "فشل التحليل", description: err.message, variant: "destructive" });
+      toast({ title: "Analysis failed", description: err.message, variant: "destructive" });
     }
     setLoading(false);
   };
@@ -80,7 +80,7 @@ export default function JobSearch() {
     <div className="max-w-3xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Job Search</h1>
-        <p className="text-muted-foreground mt-1">AI يحلل الـ CV بتاعك ويولد لينكات بحث جاهزة على مواقع التوظيف</p>
+        <p className="text-muted-foreground mt-1">AI analyzes your CV and generates ready-made search links on job platforms</p>
       </div>
 
       {!suggestions && (
@@ -88,16 +88,16 @@ export default function JobSearch() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              ابدأ البحث الذكي
+              Start Smart Search
             </CardTitle>
             <CardDescription>
-              هنحلل الـ CV بتاعك ونطلعلك لينكات بحث جاهزة على أشهر مواقع التوظيف
+              We'll analyze your CV and generate ready-made search links on top job platforms
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={generateSuggestions} disabled={loading} size="lg">
               {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Search className="mr-2 h-5 w-5" />}
-              {loading ? "جاري التحليل..." : "حلل الـ CV وابحثلي"}
+              {loading ? "Analyzing..." : "Analyze CV & Search"}
             </Button>
           </CardContent>
         </Card>
@@ -112,7 +112,7 @@ export default function JobSearch() {
                 <Briefcase className="h-5 w-5 text-primary" />
                 {suggestions.suggestedTitle}
               </CardTitle>
-              <CardDescription>المسمى الوظيفي المقترح بناءً على خبراتك</CardDescription>
+              <CardDescription>Suggested job title based on your experience</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -128,9 +128,9 @@ export default function JobSearch() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-primary" />
-                لينكات البحث الجاهزة
+                Ready Search Links
               </CardTitle>
-              <CardDescription>اضغط على أي لينك وهيفتحلك صفحة البحث مباشرة</CardDescription>
+              <CardDescription>Click any link to open the search page directly</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {suggestions.searchQueries.map((sq, i) => {
@@ -165,8 +165,8 @@ export default function JobSearch() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-amber-500" />
-                نصائح لتحسين البحث
+                <Lightbulb className="h-5 w-5 text-primary" />
+                Tips to Improve Your Search
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -182,7 +182,7 @@ export default function JobSearch() {
           </Card>
 
           <Button variant="outline" onClick={() => setSuggestions(null)}>
-            إعادة التحليل
+            Re-analyze
           </Button>
         </div>
       )}
