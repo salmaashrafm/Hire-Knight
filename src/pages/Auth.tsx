@@ -68,7 +68,7 @@ export default function Auth() {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 text-primary">
             <Briefcase className="h-8 w-8" />
-            <h1 className="text-3xl font-bold tracking-tight">AI Job Hunter</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Hire Knight</h1>
           </div>
           <p className="text-muted-foreground">Land your dream job with AI-powered applications</p>
         </div>
