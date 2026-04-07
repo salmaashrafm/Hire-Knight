@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Menu, Briefcase, FileText, Search, ScanSearch } from "lucide-react";
+import { LayoutDashboard, PlusCircle, List, Settings, LogOut, Menu, Briefcase, FileText, Search, ScanSearch, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -18,8 +19,19 @@ const navItems = [
 
 export default function MobileNav() {
   const { pathname } = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").single()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  const allItems = isAdmin
+    ? [...navItems, { label: "Admin", icon: ShieldCheck, path: "/admin" }]
+    : navItems;
 
   return (
     <header className="md:hidden flex items-center justify-between p-4 border-b bg-card">
@@ -39,7 +51,7 @@ export default function MobileNav() {
             </div>
           </div>
           <nav className="p-3 space-y-1">
-            {navItems.map((item) => (
+            {allItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
