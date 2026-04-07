@@ -165,8 +165,8 @@ export default function JobSearch() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-amber-500" />
-                نصائح لتحسين البحث
+                <Lightbulb className="h-5 w-5 text-primary" />
+                Tips to Improve Your Search
               </CardTitle>
             </CardHeader>
             <CardContent>
